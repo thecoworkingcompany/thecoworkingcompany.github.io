@@ -1171,6 +1171,31 @@ footer{position:relative;overflow:hidden}
         <button type="button" class="cartbar" id="bk-cartbar"><span id="bk-cartbar-n">Your order</span><span id="bk-cartbar-t"></span></button>
         <div class="foot"><span>All prices are MRP and inclusive of all applicable taxes.</span><span>BREΛK · Emails can wait</span></div>
       </div>
+      <div class="pl" id="pool" aria-label="BREAK Pool">
+        <div class="pl-head">
+          <div>
+            <h3>BREΛK POOL</h3>
+            <p>The more people order it, the cheaper it gets for everyone in the pool. Every rupee in your wallet buys food.</p>
+          </div>
+          <button type="button" class="pl-chip" id="pl-chip">Sign in to play</button>
+        </div>
+        <div class="pl-tabs" role="tablist" aria-label="BREAK Pool">
+          <button type="button" role="tab" data-pt="pools" aria-selected="true">Pools</button>
+          <button type="button" role="tab" data-pt="futures" aria-selected="false">Futures</button>
+          <button type="button" role="tab" data-pt="last" aria-selected="false">Last call</button>
+          <button type="button" role="tab" data-pt="wallet" aria-selected="false">Wallet</button>
+        </div>
+        <div class="pl-body">
+          <div class="pl-main" id="pl-main" aria-live="polite"><p class="pl-empty">Loading today's pools…</p></div>
+          <aside class="pl-side order" id="pl-side" aria-label="Your BREAK wallet"></aside>
+        </div>
+        <div class="pl-how">
+          <div><b>Pools</b><span>Pre-order at menu price before the cutoff. Each target the pool passes takes 10%, 15% or 20% off for everyone in it, and the difference comes back to your wallet. Your food is made after the cutoff.</span></div>
+          <div><b>Futures</b><span>Lock tomorrow's breakfast, lunch or chai at 8% off, or the next 5 working days at 12% off. Cancel up to 45 minutes before.</span></div>
+          <div><b>Last call</b><span>In the evening, whatever is left drops 10% every 10 minutes, down to half price.</span></div>
+          <div><b>Wallet</b><span>Top up by UPI with a bonus. Spend only at BREAK; it can't be withdrawn as cash. Nothing to lose: you always get the food you paid for.</span></div>
+        </div>
+      </div>
       <div class="club" id="club">
         <div class="club-head">
           <h3>BREΛK CLUB</h3>
@@ -2311,7 +2336,7 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
       if(k==="pay"&&r.value==="tab"&&!member){S.step="signin";S.pay="tab";drawPanel();return}
       S[k]=r.value;S.msg="";drawPanel()})});
     if(q("bk-signin"))q("bk-signin").onclick=function(){keep();S.step="signin";S.msg="";drawPanel()};
-    if(q("bk-signout"))q("bk-signout").onclick=function(){(sb?sb.auth.signOut():Promise.resolve()).then(function(){member=null;S.mode="pickup";if(S.pay==="tab")S.pay="online";drawPanel()})};
+    if(q("bk-signout"))q("bk-signout").onclick=function(){(sb?sb.auth.signOut():Promise.resolve()).then(function(){member=null;S.mode="pickup";if(S.pay==="tab")S.pay="online";drawPanel();window.dispatchEvent(new CustomEvent("tcc-auth",{detail:{src:"order"}}))})};
     if(q("bk-cancelauth"))q("bk-cancelauth").onclick=function(){S.step="cart";if(!member&&S.pay==="tab")S.pay="online";S.msg="";drawPanel()};
     if(q("bk-sendcode"))q("bk-sendcode").onclick=sendCode;
     if(q("bk-verify"))q("bk-verify").onclick=verifyCode;
@@ -2323,8 +2348,13 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
   // Member sign in (same email code as the TCC app)
   function loadSb(){
     if(sb)return Promise.resolve(sb);
-    return new Promise(function(ok,no){var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
-      s.onload=function(){sb=window.supabase.createClient(SB,KEY,{auth:{persistSession:true,storageKey:AUTH_KEY}});ok(sb)};s.onerror=function(){no(new Error("Sign in isn't available right now. Pay online or at the counter."))};document.head.appendChild(s)});
+    // One Supabase client for the whole page, shared with BREAK Pool
+    if(!window.__tccSbP)window.__tccSbP=new Promise(function(ok,no){
+      var make=function(){ok(window.supabase.createClient(SB,KEY,{auth:{persistSession:true,storageKey:AUTH_KEY}}))};
+      if(window.supabase&&window.supabase.createClient)return make();
+      var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+      s.onload=make;s.onerror=function(){window.__tccSbP=null;no(new Error("Sign in isn't available right now. Pay online or at the counter."))};document.head.appendChild(s)});
+    return window.__tccSbP.then(function(c){sb=c;return c});
   }
   function useSession(session){
     if(!session){member=null;return Promise.resolve()}
@@ -2348,7 +2378,7 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
     sb.auth.verifyOtp({email:S.authEmail,token:code,type:"email"}).then(function(r){
       if(r.error)throw new Error("That code didn't work or has expired. Request a new one.");
       return useSession(r.data.session);
-    }).then(function(){S.busy=false;S.step="cart";S.msg="Signed in.";S.msgInfo=true;drawPanel()})
+    }).then(function(){S.busy=false;S.step="cart";S.msg="Signed in.";S.msgInfo=true;drawPanel();window.dispatchEvent(new CustomEvent("tcc-auth",{detail:{src:"order"}}))})
       .catch(function(e){S.busy=false;S.msg=e.message;S.msgInfo=false;drawPanel()});
   }
 
@@ -2406,6 +2436,10 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
     document.getElementById("bk-new").onclick=stopTrack;
   }
 
+  // Keep in step with sign in / out from BREAK Pool
+  window.addEventListener("tcc-auth",function(e){if(e.detail&&e.detail.src==="order")return;
+    loadSb().then(function(c){return c.auth.getSession()}).then(function(r){return useSession(r.data.session)}).then(function(){if(!member){S.mode="pickup";if(S.pay==="tab")S.pay="online"}drawPanel()}).catch(function(){})});
+
   // Start up
   cart=ls.get("tcc_break_cart")||{};
   var ret=new URLSearchParams(location.search).get("break_order");
@@ -2420,6 +2454,341 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
     panel.innerHTML='<h4>ORDER AT THE COUNTER</h4><p class="sub" style="margin:0">Online ordering is taking a break. Walk up to the BREAK counter on the 4th floor, or call <a href="tel:+918087050221" style="color:#C4582B">+91 80870 50221</a>.</p>';
   });
 })();</script>
+<style id="pool-css">/* BREAK Pool: pools, futures, last call and wallet */
+.pl{margin-top:clamp(28px,4vw,48px);background:#FFF7F2;color:#3C3C3C;padding:clamp(24px,4vw,56px);position:relative}
+.pl-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px;border-bottom:2px solid #3C3C3C;padding-bottom:18px}
+.pl-head h3{font:600 clamp(32px,4vw,48px)/1 var(--sans);letter-spacing:.24em;color:#C4582B;margin:0}
+.pl-head p{font:400 13px/1.6 var(--mono);color:#6A6868;margin:10px 0 0;max-width:62ch}
+.pl-chip{font:600 13px var(--mono);border:1.5px solid #3C3C3C;background:#fff;color:#3C3C3C;padding:9px 14px;cursor:pointer;font-variant-numeric:tabular-nums}
+.pl-chip:hover{background:#3C3C3C;color:#fff}
+.pl-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:20px 0 22px}
+.pl-tabs button{font:600 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;padding:10px 16px;border:1.5px solid #E5B0A4;background:transparent;color:#6A6868;cursor:pointer}
+.pl-tabs button[aria-selected="true"]{background:#C4582B;border-color:#C4582B;color:#fff}
+.pl-tabs button:focus-visible,.pl button:focus-visible{outline:2px solid #3C3C3C;outline-offset:2px}
+.pl-body{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:40px;align-items:start}
+.pl-main{min-width:0;font:400 14px/1.5 var(--mono)}
+.pl-empty{color:#6A6868;margin:0;padding:18px;border:1px dashed #E5B0A4}
+.pl-note{font:400 12.5px/1.55 var(--mono);color:#6A6868;margin:0 0 16px}
+.pl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.pl-card{background:#fff;border:1.5px solid #3C3C3C;padding:16px 16px 14px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.pl-card.done{border-color:#B9A9A0}
+.pl-r{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.pl-nm{font:600 16px/1.25 var(--sans);color:#3C3C3C}
+.pl-px{font:600 15px var(--mono);white-space:nowrap;font-variant-numeric:tabular-nums}
+.pl-px s{color:#9A8F8A;font-weight:400;margin-right:6px}
+.pl-meta{font:400 12px var(--mono);color:#6A6868}
+.pl-track{position:relative;height:10px;background:#F4E4DC;margin:12px 0 24px}
+.pl-fill{position:absolute;inset:0 auto 0 0;background:#C4582B;transition:width .5s ease}
+.pl-tick{position:absolute;top:-4px;width:2px;height:18px;background:#9A8F8A}
+.pl-tick span{position:absolute;top:20px;left:50%;transform:translateX(-50%);font:500 10.5px var(--mono);color:#6A6868;white-space:nowrap}
+.pl-tick.hit{background:#3D5A3A}.pl-tick.hit span{color:#3D5A3A;font-weight:600}
+.pl-tick:last-child span{left:auto;right:-1px;transform:none}
+.pl-next{font:500 12.5px var(--mono);color:#3C3C3C}
+.pl-next b{color:#C4582B}
+.pl-btn{border:0;background:#C4582B;color:#fff;font:600 13px var(--sans);letter-spacing:.04em;padding:10px 14px;cursor:pointer;white-space:nowrap}
+.pl-btn:hover{background:#A8402B}
+.pl-btn[disabled]{opacity:.45;cursor:not-allowed}
+.pl-btn.ghost{background:transparent;color:#C4582B;border:1.5px solid #C4582B}
+.pl-mine{font:500 12px var(--mono);color:#3D5A3A;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.pl-link{background:none;border:0;padding:0;font:600 12px var(--sans);color:#C4582B;text-decoration:underline;cursor:pointer}
+.pl-done{font:600 12.5px var(--mono);color:#3D5A3A}
+.pl-seg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.pl-seg button{font:500 13px var(--mono);padding:9px 12px;border:1px solid #E5B0A4;background:#fff;color:#3C3C3C;cursor:pointer;text-align:left}
+.pl-seg button small{display:block;font-size:11px;color:#6A6868}
+.pl-seg button[aria-pressed="true"]{border-color:#C4582B;box-shadow:inset 3px 0 0 #C4582B;background:#FFF7F2}
+.pl-form{background:#fff;border:1.5px solid #3C3C3C;padding:18px;display:grid;gap:14px;max-width:640px}
+.pl-lbl{font:600 11px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#6A6B4E;margin:0 0 6px}
+.pl-form select,.pl-form input,.pl-staff select,.pl-staff input,.pl-amt input{font:400 15px var(--mono);padding:10px;border:1px solid #B9A9A0;background:#fff;color:#3C3C3C;border-radius:0;width:100%}
+.pl-row2{display:grid;grid-template-columns:minmax(0,1fr) 110px;gap:10px}
+.pl-sum{display:flex;justify-content:space-between;align-items:baseline;gap:12px;border-top:1.5px solid #3C3C3C;padding-top:12px;font:600 17px var(--sans)}
+.pl-sum small{display:block;font:400 12px var(--mono);color:#6A6868}
+.pl-list{display:grid;gap:8px}
+.pl-item{display:flex;justify-content:space-between;align-items:center;gap:12px;background:#fff;border:1px solid #E5B0A4;padding:12px 14px;min-width:0}
+.pl-item .l{min-width:0}
+.pl-item .l b{display:block;font:600 15px var(--sans)}
+.pl-item .l span{font:400 12px var(--mono);color:#6A6868}
+.pl-qty{font:600 10.5px var(--sans);letter-spacing:.08em;background:#F4E4DC;color:#3C3C3C;padding:2px 6px;margin-left:6px;vertical-align:2px}
+.pl-staff{margin-top:18px;border:1.5px dashed #6A6B4E;padding:14px;display:grid;gap:10px;max-width:640px}
+.pl-staff .pl-row3{display:grid;grid-template-columns:minmax(0,1fr) 90px 90px;gap:8px}
+.pl-bal{background:#3C3C3C;color:#FFF7F2;padding:16px;margin:0 0 14px}
+.pl-bal span{font:600 11px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#E5B0A4}
+.pl-bal b{display:block;font:600 38px/1.1 var(--sans);font-variant-numeric:tabular-nums;margin-top:4px}
+.pl-bal small{font:400 11.5px var(--mono);color:#D9CFC9}
+.pl-tops{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin:0 0 10px}
+.pl-tops button{border:1px solid #E5B0A4;background:#fff;padding:9px 4px;cursor:pointer;text-align:center;font:600 14px var(--mono);color:#3C3C3C}
+.pl-tops button small{display:block;font:600 11px var(--mono);color:#3D5A3A}
+.pl-tops button:hover{border-color:#C4582B}
+.pl-amt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px;margin:0 0 14px}
+.pl-ledger{display:grid;margin:0;max-width:640px}
+.pl-ledger div{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #EADBD3;font:400 13px var(--mono)}
+.pl-ledger em{font-style:normal;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pl-ledger .p{color:#3D5A3A}
+.pl-ledger small{display:block;color:#9A8F8A;font-size:11px}
+.pl-toast{position:sticky;top:76px;z-index:2;background:#3C3C3C;color:#fff;font:500 13px var(--mono);padding:10px 14px;margin:0 0 14px}
+.pl-toast.err{background:#A8402B}
+.pl-how{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin-top:28px;border-top:1px solid #E5B0A4;padding-top:20px}
+.pl-how div{display:grid;gap:4px;min-width:0}
+.pl-how b{font:600 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:#C4582B}
+.pl-how span{font:400 12.5px/1.6 var(--mono);color:#6A6868}
+.pl h4.pl-sub{font:600 13px var(--sans);letter-spacing:.2em;text-transform:uppercase;color:#6A6B4E;margin:26px 0 10px;display:flex;align-items:center;gap:10px}
+.pl h4.pl-sub::after{content:"";flex:1;height:1px;background:#E5B0A4}
+.pl-side{position:sticky;top:96px}
+@media (max-width:980px){.pl-body{grid-template-columns:minmax(0,1fr)}.pl-side{position:static}.pl-how{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.pl-how{grid-template-columns:minmax(0,1fr)}.pl-staff .pl-row3{grid-template-columns:minmax(0,1fr) 70px 70px}}
+@media (prefers-reduced-motion:reduce){.pl-fill{transition:none}}
+</style>
+<script id="pool-js">(function(){
+  // ---------- BREAK Pool: pools, futures, last call and a UPI-funded wallet (food only) ----------
+  var root=document.getElementById("pool");if(!root)return;
+  var SB="https://kedmkbgizyepxwftahmk.supabase.co", KEY="sb_publishable_SAeCe3CFJGoPIVGhqoTHEA_dPAEMIOV", AUTH_KEY="sb-kedmkbgizyepxwftahmk-auth-token";
+  var esc=function(s){return String(s==null?"":s).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]})};
+  var rs=function(p){return "₹"+(Number(p)/100).toLocaleString("en-IN",{maximumFractionDigits:2})};
+  var tIST=function(d){return new Date(d).toLocaleTimeString("en-IN",{timeZone:"Asia/Kolkata",hour:"numeric",minute:"2-digit"})};
+  var dIST=function(d){return new Date(d).toLocaleDateString("en-IN",{timeZone:"Asia/Kolkata",weekday:"short",day:"numeric",month:"short"})};
+  var ls={get:function(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+  var main=document.getElementById("pl-main"), side=document.getElementById("pl-side"), chip=document.getElementById("pl-chip");
+  var sb=null, me=null;
+  var S={tab:"pools",pools:null,last:null,wallet:null,menu:null,mode:ls.get("tcc_pool_mode")==="desk"?"desk":"pickup",desk:ls.get("tcc_pool_desk")||"",
+    slot:"lunch",days:1,fitem:"",fqty:1,auth:"",email:"",busy:false,toast:"",toastErr:false,staffItem:"",staffQty:6,staffHrs:2};
+
+  // Shared Supabase client with the BREAK order panel (same sign-in)
+  function loadSb(){
+    if(sb)return Promise.resolve(sb);
+    if(!window.__tccSbP)window.__tccSbP=new Promise(function(ok,no){
+      var make=function(){ok(window.supabase.createClient(SB,KEY,{auth:{persistSession:true,storageKey:AUTH_KEY}}))};
+      if(window.supabase&&window.supabase.createClient)return make();
+      var s=document.createElement("script");s.src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js";
+      s.onload=make;s.onerror=function(){window.__tccSbP=null;no(new Error("Sign in isn't available right now. Try again in a minute."))};document.head.appendChild(s)});
+    return window.__tccSbP.then(function(c){sb=c;return c});
+  }
+  function token(){
+    if(!sb||!me)return Promise.resolve(null);
+    return sb.auth.getSession().then(function(r){var s=r.data.session;if(!s){me=null;return null}me.token=s.access_token;return s.access_token}).catch(function(){return me&&me.token});
+  }
+  function call(path,body,method){
+    return token().then(function(t){
+      var h={"apikey":KEY,"Content-Type":"application/json"};if(t)h.Authorization="Bearer "+t;
+      return fetch(SB+path,{method:method||"POST",headers:h,body:body===undefined?undefined:JSON.stringify(body)});
+    }).then(function(r){return r.json().catch(function(){return {}}).then(function(j){
+      if(!r.ok)throw new Error((j&&(j.error||j.message))||"Something went wrong. Try again.");return j})});
+  }
+  var rpc=function(name,args){return call("/rest/v1/rpc/"+name,args||{})};
+
+  function useSession(session){
+    if(!session){me=null;return Promise.resolve()}
+    me={id:session.user.id,email:session.user.email,token:session.access_token};
+    return call("/rest/v1/profiles?select=full_name,desk_label,role&id=eq."+session.user.id,undefined,"GET").then(function(r){
+      var p=r[0]||{};me.name=p.full_name;me.role=p.role;if(p.desk_label&&!S.desk)S.desk=p.desk_label;
+    }).catch(function(){});
+  }
+
+  // ---------- Data ----------
+  function refresh(){
+    var jobs=[rpc("pool_board").then(function(r){S.pools=r}).catch(function(){if(!S.pools)S.pools=[]}),
+              rpc("last_call_board").then(function(r){S.last=r}).catch(function(){if(!S.last)S.last=[]})];
+    if(me)jobs.push(rpc("my_break_wallet").then(function(r){S.wallet=r}).catch(function(){}));
+    if(!S.menu)jobs.push(call("/rest/v1/menu_items?select=id,category,name,price_paise&available=eq.true&order=sort.asc",undefined,"GET").then(function(r){S.menu=r}).catch(function(){S.menu=[]}));
+    return Promise.all(jobs).then(render);
+  }
+  function toast(m,err){S.toast=m;S.toastErr=!!err;render();clearTimeout(toast.t);toast.t=setTimeout(function(){S.toast="";render()},err?7000:4500)}
+  function act(p,okMsg){
+    if(S.busy)return;S.busy=true;render();
+    return p.then(function(r){S.busy=false;return refresh().then(function(){if(okMsg)toast(typeof okMsg==="function"?okMsg(r):okMsg)})})
+      .catch(function(e){S.busy=false;toast(e.message,true)});
+  }
+  function needMe(){if(me)return true;toast("Sign in as a TCC member first. It takes a minute.",true);var f=document.getElementById("pl-aemail");if(f)f.focus();return false}
+  var deliver=function(){return {p_mode:S.mode,p_deliver_to:S.mode==="desk"?S.desk.trim():null}};
+  function deskOk(){if(S.mode==="desk"&&!S.desk.trim()){toast("Add your desk or cabin under How you'll get it.",true);return false}return true}
+
+  // ---------- Views ----------
+  function tierPct(tiers,v){var p=0;tiers.forEach(function(t){if(v>=t[0])p=t[1]});return p}
+  function vPools(){
+    var P=S.pools;if(!P)return '<p class="pl-empty">Loading today\'s pools…</p>';
+    if(!P.length)return '<p class="pl-empty">No pools are open today. BREAK runs pools Monday to Saturday; check back tomorrow morning.</p>';
+    var h='<p class="pl-note">Join at menu price. When a pool passes a target, everyone in it pays less and the difference comes back to your wallet at the cutoff. Pool orders are made fresh after the cutoff.</p><div class="pl-grid">';
+    P.forEach(function(p){
+      var tiers=p.tiers,max=tiers[tiers.length-1][0]*1.12,v=p.volume,pct=p.status==="settled"?p.settled_pct:tierPct(tiers,v);
+      var closed=p.status!=="open"||new Date(p.cutoff_at)<=new Date(),next=null;
+      tiers.forEach(function(t){if(!next&&v<t[0])next=t});
+      var now=Math.round(p.price_paise*(100-pct)/10000)*100;
+      h+='<div class="pl-card'+(closed?' done':'')+'"><div class="pl-r"><span class="pl-nm">'+esc(p.name)+'</span><span class="pl-px">'+(pct?'<s>'+rs(p.price_paise)+'</s>':'')+rs(now)+'</span></div>';
+      h+='<div class="pl-meta">'+v+' in the pool · '+(closed?'closed '+tIST(p.cutoff_at):'closes '+tIST(p.cutoff_at))+'</div>';
+      h+='<div class="pl-track" aria-hidden="true"><div class="pl-fill" style="width:'+Math.min(100,v/max*100)+'%"></div>';
+      tiers.forEach(function(t){h+='<i class="pl-tick'+(v>=t[0]?' hit':'')+'" style="left:'+(t[0]/max*100)+'%"><span>'+t[0]+' · '+t[1]+'%</span></i>'});
+      h+='</div>';
+      if(p.status==="settled")h+='<div class="pl-done">Settled: '+pct+'% back to everyone in the pool</div>';
+      else if(closed)h+='<div class="pl-done">Closed. Settling now…</div>';
+      else h+='<div class="pl-r"><span class="pl-next">'+(next?'<b>'+(next[0]-v)+' more</b> for '+next[1]+'% off':'<b>Top target reached</b> · 20% off')+'</span><button type="button" class="pl-btn" data-join="'+p.id+'"'+(S.busy?' disabled':'')+'>Join · '+rs(p.price_paise)+'</button></div>';
+      if(p.my_qty>0){
+        h+='<div class="pl-mine">You\'re in with '+p.my_qty+(pct&&!closed?' · '+rs((p.price_paise-now)*p.my_qty)+' back so far':'');
+        if(!closed)p.my_entries.forEach(function(e){h+='<button type="button" class="pl-link" data-leave="'+e.id+'">Leave ('+e.qty+')</button>'});
+        else if(p.status==="settled"){var back=p.my_entries.reduce(function(a,e){return a+e.refund_paise},0);if(back)h+=' · '+rs(back)+' came back to your wallet'}
+        h+='</div>';
+      }
+      h+='</div>';
+    });
+    return h+'</div>';
+  }
+  function vFutures(){
+    var menu=S.menu||[];if(!S.fitem&&menu.length)S.fitem=menu[0].id;
+    var m=menu.filter(function(x){return x.id===S.fitem})[0];
+    var pct=S.days===5?12:8,unit=m?Math.round(m.price_paise*(100-pct)/10000)*100:0,total=unit*S.fqty*S.days;
+    var slots=[["breakfast","Breakfast","Ready 9:45 am"],["lunch","Lunch","Ready 1:00 pm"],["chai","Chai break","Ready 4:30 pm"]];
+    var h='<p class="pl-note">Book ahead at a locked price. The kitchen preps exactly what\'s booked, so you skip the queue.</p><div class="pl-form">';
+    h+='<div><p class="pl-lbl">When</p><div class="pl-seg" role="group" aria-label="When">'+slots.map(function(s){return '<button type="button" data-slot="'+s[0]+'" aria-pressed="'+(S.slot===s[0])+'">'+s[1]+'<small>'+s[2]+'</small></button>'}).join("")+'</div></div>';
+    h+='<div><p class="pl-lbl">How long</p><div class="pl-seg" role="group" aria-label="How long"><button type="button" data-days="1" aria-pressed="'+(S.days===1)+'">Tomorrow<small>8% off</small></button><button type="button" data-days="5" aria-pressed="'+(S.days===5)+'">5-day pass<small>Next 5 working days · 12% off</small></button></div></div>';
+    var cats=[],by={};menu.forEach(function(x){if(!by[x.category]){by[x.category]=[];cats.push(x.category)}by[x.category].push(x)});
+    h+='<div class="pl-row2"><label><p class="pl-lbl">Item</p><select id="pl-fitem">'+cats.map(function(c){return '<optgroup label="'+esc(c)+'">'+by[c].map(function(x){return '<option value="'+x.id+'"'+(x.id===S.fitem?' selected':'')+'>'+esc(x.name)+' · '+rs(x.price_paise)+'</option>'}).join("")+'</optgroup>'}).join("")+'</select></label>';
+    h+='<label><p class="pl-lbl">Qty</p><select id="pl-fqty">'+[1,2,3,4,5].map(function(n){return '<option'+(n===S.fqty?' selected':'')+'>'+n+'</option>'}).join("")+'</select></label></div>';
+    if(m)h+='<div class="pl-sum"><span>'+(S.days===5?'5 days × ':'')+S.fqty+' × '+rs(unit)+'<small>'+esc(m.name)+' · menu '+rs(m.price_paise)+'</small></span><span>'+rs(total)+'</span></div>';
+    h+='<button type="button" class="pl-btn" id="pl-book"'+(S.busy||!m?' disabled':'')+'>'+(me?'Book from wallet · '+rs(total):'Sign in to book')+'</button></div>';
+    var up=S.wallet&&S.wallet.upcoming||[];
+    if(me){
+      h+='<h4 class="pl-sub">Your bookings</h4>';
+      if(!up.length)h+='<p class="pl-empty">Nothing booked yet.</p>';
+      else h+='<div class="pl-list">'+up.map(function(o){var it=(o.items||[])[0]||{};return '<div class="pl-item"><div class="l"><b>'+(it.qty||1)+' × '+esc(it.name)+'</b><span>'+dIST(o.release_at)+' · ready about '+tIST(new Date(new Date(o.release_at).getTime()+15*60e3))+' · '+rs(o.total_paise)+'</span></div><button type="button" class="pl-link" data-cancel="'+o.order_id+'">Cancel</button></div>'}).join("")+'</div>';
+    }
+    return h;
+  }
+  function vLast(){
+    var L=S.last;if(!L)return '<p class="pl-empty">Loading…</p>';
+    var h='<p class="pl-note">What\'s left at the end of the day, getting cheaper every 10 minutes until it\'s gone or half price.</p>';
+    var live=L.filter(function(l){return new Date(l.starts_at)<=new Date()}),soon=L.filter(function(l){return new Date(l.starts_at)>new Date()});
+    if(!live.length&&!soon.length)h+='<p class="pl-empty">Nothing on last call right now. The café lists leftovers in the evening; check back after 6 pm.</p>';
+    if(live.length)h+='<div class="pl-list">'+live.map(function(l){
+      var steps=Math.floor((Date.now()-new Date(l.starts_at))/60e3/l.step_minutes),pct=Math.min(l.floor_pct,steps*l.step_pct);
+      var nextAt=new Date(new Date(l.starts_at).getTime()+(steps+1)*l.step_minutes*60e3),np=Math.min(l.floor_pct,pct+l.step_pct);
+      var nxt=pct<l.floor_pct?'drops to '+rs(Math.round(l.price_paise*(100-np)/10000)*100)+' at '+tIST(nextAt):'final price';
+      return '<div class="pl-item"><div class="l"><b>'+esc(l.name)+'<span class="pl-qty">'+l.qty_left+' LEFT</span></b><span><s>'+rs(l.price_paise)+'</s> '+rs(l.now_paise)+' · '+nxt+' · until '+tIST(l.ends_at)+'</span></div><button type="button" class="pl-btn" data-lc="'+l.id+'"'+(S.busy?' disabled':'')+'>Buy '+rs(l.now_paise)+'</button></div>'}).join("")+'</div>';
+    if(soon.length)h+='<h4 class="pl-sub">Coming up</h4><div class="pl-list">'+soon.map(function(l){return '<div class="pl-item"><div class="l"><b>'+esc(l.name)+'<span class="pl-qty">'+l.qty_left+'</span></b><span>Opens '+tIST(l.starts_at)+' at '+rs(l.price_paise)+'</span></div></div>'}).join("")+'</div>';
+    if(me&&me.role==="staff"&&S.menu&&S.menu.length){
+      if(!S.staffItem)S.staffItem=S.menu[0].id;
+      h+='<div class="pl-staff"><p class="pl-lbl" style="margin:0">Staff · put leftovers on last call</p><div class="pl-row3"><select id="pl-sitem" aria-label="Item">'+S.menu.map(function(x){return '<option value="'+x.id+'"'+(x.id===S.staffItem?' selected':'')+'>'+esc(x.name)+'</option>'}).join("")+'</select><input id="pl-sqty" type="number" min="1" max="200" value="'+S.staffQty+'" aria-label="Quantity"><input id="pl-shrs" type="number" min="1" max="6" step="0.5" value="'+S.staffHrs+'" aria-label="Hours"></div><button type="button" class="pl-btn ghost" id="pl-sadd"'+(S.busy?' disabled':'')+'>List now · quantity, hours open</button></div>';
+    }
+    return h;
+  }
+  function vWallet(){
+    if(!me)return '<p class="pl-empty">Sign in to see your wallet. Top up by UPI and use it for Pools, Futures and Last call.</p>';
+    var w=S.wallet;if(!w)return '<p class="pl-empty">Loading your wallet…</p>';
+    var kinds={topup:"UPI top-up",bonus:"Bonus"};
+    var h='<p class="pl-note">Your BREAK wallet only pays at BREAK and can\'t be withdrawn as cash. Pool refunds and cancelled bookings come back here.</p><h4 class="pl-sub" style="margin-top:0">Activity</h4>';
+    if(!w.ledger.length)return h+'<p class="pl-empty">No activity yet. Top up to get started.</p>';
+    return h+'<div class="pl-ledger">'+w.ledger.map(function(l){return '<div><span>'+esc(l.label)+'<small>'+dIST(l.at)+', '+tIST(l.at)+'</small></span><em class="'+(l.amount_paise>0?'p':'')+'">'+(l.amount_paise>0?'+':'−')+rs(Math.abs(l.amount_paise))+'</em></div>'}).join("")+'</div>';
+  }
+  function vSide(){
+    var h='';
+    if(!me){
+      h+='<h4>YOUR WALLET</h4><p class="sub">TCC members sign in with the email their company registered with us.</p>';
+      if(S.auth==="code")h+='<p class="sub" style="margin:0 0 10px">We emailed a 6-digit code to '+esc(S.email)+'.</p><label class="f"><span>6-digit code</span><input type="text" id="pl-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6"></label><button type="button" class="go" id="pl-verify"'+(S.busy?' disabled':'')+'>Sign in</button><button type="button" class="linkbtn" id="pl-back" style="margin-top:8px">Use a different email</button>';
+      else h+='<label class="f"><span>Work email</span><input type="email" id="pl-aemail" autocomplete="email" value="'+esc(S.email)+'" placeholder="you@company.in"></label><button type="button" class="go" id="pl-send"'+(S.busy?' disabled':'')+'>Email me a code</button>';
+      return h;
+    }
+    var bal=S.wallet?S.wallet.balance_paise:null;
+    h+='<div class="pl-bal"><span>BREAK wallet</span><b>'+(bal==null?'…':rs(bal))+'</b><small>'+esc(me.name||me.email)+'</small></div>';
+    h+='<p class="pl-lbl">Top up by UPI</p><div class="pl-tops">'+[[500,25],[1000,80],[2000,200]].map(function(t){return '<button type="button" data-top="'+t[0]+'"'+(S.busy?' disabled':'')+'>₹'+t[0].toLocaleString("en-IN")+'<small>+₹'+t[1]+' bonus</small></button>'}).join("")+'</div>';
+    h+='<div class="pl-amt"><input type="number" id="pl-amt" min="100" max="5000" step="50" placeholder="Other amount, ₹100–5,000" aria-label="Other amount"><button type="button" class="pl-btn" id="pl-topgo"'+(S.busy?' disabled':'')+'>Pay</button></div>';
+    h+='<fieldset><legend>How you\'ll get it</legend><label class="opt"><input type="radio" name="pl-mode" value="pickup"'+(S.mode==="pickup"?' checked':'')+'><span>Pickup at the BREAK counter<small>4th floor, Orange City Mall 1</small></span></label><label class="opt"><input type="radio" name="pl-mode" value="desk"'+(S.mode==="desk"?' checked':'')+'><span>Bring it to my desk<small>Members at Branch 3</small></span></label></fieldset>';
+    if(S.mode==="desk")h+='<label class="f"><span>Desk or cabin</span><input type="text" id="pl-desk" value="'+esc(S.desk)+'" placeholder="e.g. C2 or Desk 14"></label>';
+    h+='<div class="member" style="margin:6px 0 0"><span>Payments by Razorpay</span><button type="button" class="linkbtn" id="pl-out">Sign out</button></div>';
+    return h;
+  }
+  function render(){
+    [].forEach.call(root.querySelectorAll(".pl-tabs button"),function(b){b.setAttribute("aria-selected",b.dataset.pt===S.tab)});
+    var v={pools:vPools,futures:vFutures,last:vLast,wallet:vWallet}[S.tab]();
+    var keep=document.activeElement&&main.contains(document.activeElement)?document.activeElement.id:null;
+    main.innerHTML=(S.toast?'<div class="pl-toast'+(S.toastErr?' err':'')+'" role="status">'+esc(S.toast)+'</div>':'')+v;
+    if(keep&&document.getElementById(keep))document.getElementById(keep).focus();
+    var sideFocus=document.activeElement&&side.contains(document.activeElement)&&document.activeElement.tagName==="INPUT";
+    if(!sideFocus)side.innerHTML=vSide();
+    chip.textContent=me?(S.wallet?"Wallet "+rs(S.wallet.balance_paise):"Wallet"):"Sign in to play";
+  }
+
+  // ---------- Events ----------
+  root.querySelector(".pl-tabs").addEventListener("click",function(e){var b=e.target.closest("button[data-pt]");if(!b)return;S.tab=b.dataset.pt;render()});
+  chip.addEventListener("click",function(){if(me){S.tab="wallet";render()}side.scrollIntoView({behavior:"smooth",block:"center"});var f=document.getElementById("pl-aemail");if(f)setTimeout(function(){f.focus()},350)});
+  main.addEventListener("change",function(e){
+    if(e.target.id==="pl-fitem"){S.fitem=e.target.value;render()}
+    if(e.target.id==="pl-fqty"){S.fqty=Number(e.target.value);render()}
+    if(e.target.id==="pl-sitem")S.staffItem=e.target.value;
+  });
+  main.addEventListener("input",function(e){if(e.target.id==="pl-sqty")S.staffQty=Number(e.target.value);if(e.target.id==="pl-shrs")S.staffHrs=Number(e.target.value)});
+  main.addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    if(b.dataset.join){if(!needMe()||!deskOk())return;var p=S.pools.filter(function(x){return x.id===b.dataset.join})[0];
+      act(rpc("join_pool",Object.assign({p_pool:b.dataset.join,p_qty:1},deliver())),function(r){var nx=null;p.tiers.forEach(function(t){if(!nx&&r.volume<t[0])nx=t});return "You're in the "+p.name+" pool. "+(nx?(nx[0]-r.volume)+" more for "+nx[1]+"% off.":"Top target reached: 20% off.")})}
+    else if(b.dataset.leave)act(rpc("leave_pool",{p_entry:b.dataset.leave}),"You've left the pool. The full amount is back in your wallet.");
+    else if(b.dataset.slot){S.slot=b.dataset.slot;render()}
+    else if(b.dataset.days){S.days=Number(b.dataset.days);render()}
+    else if(b.id==="pl-book"){if(!needMe()||!deskOk())return;
+      act(rpc("book_future",Object.assign({p_item:S.fitem,p_slot:S.slot,p_days:S.days,p_qty:S.fqty},deliver())),function(r){return S.days===5?"Booked for the next 5 working days. "+rs(r.total_paise)+" paid from your wallet.":"Booked for tomorrow. "+rs(r.total_paise)+" paid from your wallet."})}
+    else if(b.dataset.cancel)act(rpc("cancel_future",{p_order:b.dataset.cancel}),"Booking cancelled. The money is back in your wallet.");
+    else if(b.dataset.lc){if(!needMe()||!deskOk())return;act(rpc("buy_last_call",Object.assign({p_lc:b.dataset.lc,p_qty:1},deliver())),"Bought. It's on its way from the counter.")}
+    else if(b.id==="pl-sadd"){if(!(S.staffQty>=1))return toast("Enter how many are left.",true);
+      act(rpc("staff_add_last_call",{p_item:S.staffItem,p_qty:S.staffQty,p_starts:new Date().toISOString(),p_hours:S.staffHrs||2}),"Listed on last call.")}
+  });
+  side.addEventListener("change",function(e){
+    if(e.target.name==="pl-mode"){S.mode=e.target.value;ls.set("tcc_pool_mode",S.mode);side.innerHTML=vSide()}
+  });
+  side.addEventListener("input",function(e){if(e.target.id==="pl-desk"){S.desk=e.target.value;ls.set("tcc_pool_desk",S.desk)}if(e.target.id==="pl-aemail")S.email=e.target.value});
+  side.addEventListener("click",function(e){
+    var b=e.target.closest("button");if(!b)return;
+    if(b.id==="pl-send")sendCode();
+    else if(b.id==="pl-verify")verifyCode();
+    else if(b.id==="pl-back"){S.auth="";side.innerHTML=vSide()}
+    else if(b.id==="pl-out")(sb?sb.auth.signOut():Promise.resolve()).then(function(){me=null;S.wallet=null;window.dispatchEvent(new CustomEvent("tcc-auth",{detail:{src:"pool"}}));refresh()});
+    else if(b.dataset.top)topUp(Number(b.dataset.top));
+    else if(b.id==="pl-topgo"){var a=Number((document.getElementById("pl-amt")||{}).value);if(!(a>=100&&a<=5000))return toast("Top up between ₹100 and ₹5,000.",true);topUp(a)}
+  });
+  side.addEventListener("keydown",function(e){if(e.key!=="Enter")return;if(e.target.id==="pl-aemail")sendCode();if(e.target.id==="pl-code")verifyCode();if(e.target.id==="pl-amt")document.getElementById("pl-topgo").click()});
+
+  function sendCode(){
+    var em=((document.getElementById("pl-aemail")||{}).value||"").trim().toLowerCase();S.email=em;
+    if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em))return toast("Enter the email your company registered with us.",true);
+    S.busy=true;render();
+    loadSb().then(function(c){return c.auth.signInWithOtp({email:em,options:{shouldCreateUser:false}})}).then(function(r){
+      S.busy=false;if(r.error){toast(/signup|not allowed|not found/i.test(r.error.message)?"This email isn't registered as a TCC member yet. Ask your company admin or the front desk.":r.error.message,true);return}
+      S.auth="code";side.innerHTML=vSide();var f=document.getElementById("pl-code");if(f)f.focus();
+    }).catch(function(e){S.busy=false;toast(e.message,true)});
+  }
+  function verifyCode(){
+    var code=((document.getElementById("pl-code")||{}).value||"").trim();
+    if(!/^\d{6}$/.test(code))return toast("Enter the 6-digit code from the email.",true);
+    S.busy=true;render();
+    sb.auth.verifyOtp({email:S.email,token:code,type:"email"}).then(function(r){
+      if(r.error)throw new Error("That code didn't work or has expired. Request a new one.");
+      return useSession(r.data.session);
+    }).then(function(){S.busy=false;S.auth="";window.dispatchEvent(new CustomEvent("tcc-auth",{detail:{src:"pool"}}));return refresh()}).then(function(){toast("Signed in. Top up your wallet to start.")})
+      .catch(function(e){S.busy=false;toast(e.message,true)});
+  }
+  function topUp(rupees){
+    if(!needMe()||S.busy)return;S.busy=true;render();
+    token().then(function(t){return fetch(SB+"/functions/v1/break-wallet-topup",{method:"POST",headers:{"apikey":KEY,"Content-Type":"application/json","Authorization":"Bearer "+t},
+      body:JSON.stringify({amount_rupees:rupees,return_url:location.origin+location.pathname})})})
+    .then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(!r.ok||!j.pay_url)throw new Error(j.error||"UPI top-up isn't available right now.");return j})})
+    .then(function(j){ls.set("tcc_pool_topup",j.topup_id);location.href=j.pay_url})
+    .catch(function(e){S.busy=false;toast(e.message,true)});
+  }
+  function checkTopup(id,tries){
+    token().then(function(t){if(!t)return null;return fetch(SB+"/functions/v1/break-wallet-topup",{method:"POST",headers:{"apikey":KEY,"Content-Type":"application/json","Authorization":"Bearer "+t},body:JSON.stringify({check:id})}).then(function(r){return r.json()})})
+    .then(function(j){
+      if(j&&j.status==="paid"){ls.set("tcc_pool_topup",null);S.tab="wallet";refresh().then(function(){toast("Top-up received. Your wallet is ready.")});return}
+      if(tries>0)setTimeout(function(){checkTopup(id,tries-1)},4000);
+      else toast("We haven't received that payment yet. If money left your account, it will show here within a few minutes.",true);
+    }).catch(function(){if(tries>0)setTimeout(function(){checkTopup(id,tries-1)},4000)});
+  }
+
+  // Keep in step with sign in / out from the BREAK order panel
+  window.addEventListener("tcc-auth",function(e){if(e.detail&&e.detail.src==="pool")return;
+    loadSb().then(function(c){return c.auth.getSession()}).then(function(r){return useSession(r.data.session)}).then(refresh).catch(function(){})});
+
+  // Start
+  var q=new URLSearchParams(location.search),ret=q.get("wallet_topup");
+  var restore=ls.get(AUTH_KEY)?loadSb().then(function(c){return c.auth.getSession()}).then(function(r){return useSession(r.data.session)}).catch(function(){}):Promise.resolve();
+  restore.then(refresh).then(function(){
+    if(ret&&/^[0-9a-f-]{36}$/i.test(ret)&&me){S.tab="wallet";render();toast("Checking your UPI payment…");checkTopup(ret,6);history.replaceState(null,"",location.pathname+"#break");root.scrollIntoView({block:"start"})}
+  });
+  setInterval(function(){if(document.visibilityState==="visible"&&root.offsetParent!==null&&!S.busy)refresh()},20000);
+})();</script>
 <script id="rooms-js">// ---------- Rooms: the website as tabs ----------
 (function(){
   if(/(access_token|error_code|token_hash)=/.test(location.hash))return; // sign-in links go to /app/
@@ -2429,7 +2798,7 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
     {id:"workspaces",name:"Workspaces",desc:"From one dedicated desk to a fully managed floor, meeting rooms, and everything that comes included.",img:"assets/hd-cabin.jpg"},
     {id:"app",name:"Member app",desc:"Rooms, guests, BREAK orders, requests and billing from your phone. Try it here.",img:"assets/hd-logo-desks.jpg"},
     {id:"locations",name:"Locations",desc:"Five branches across Dharampeth, Dev Nagar and Orange City Mall 1.",img:"assets/hd-reception.jpg"},
-    {id:"break",name:"BREΛK",desc:"Our café. See the menu, order ahead, and take a two-minute brain break.",img:"assets/cafe-counter.jpg"},
+    {id:"break",name:"BREΛK",desc:"Our café. See the menu, order ahead, join a BREAK Pool, and take a two-minute brain break.",img:"assets/cafe-counter.jpg"},
     {id:"about",name:"About us",desc:"Our story, how we think, the founders, and the teams who work with us.",img:"assets/hd-connect.jpg"},
     {id:"faq",name:"FAQ",desc:"Pricing, contracts, parking, internet and everything else people ask before visiting.",img:"assets/hd-meeting-green.jpg"},
     {id:"tour",name:"Book a tour",desc:"Tell us about your team and we'll have the right space ready when you visit.",img:"assets/hd-open-floor.jpg"}
