@@ -2314,7 +2314,7 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
       h+='<fieldset><legend>How you\'ll get it</legend>'+opt("mode","pickup","Pickup at the BREAK counter","We\'ll show you when it\'s ready")+opt("mode","desk","Bring it to my desk",member?"For members at Branch 3":"Members only: sign in first",!member)+'</fieldset>';
       if(S.mode==="desk"&&member)h+='<label class="f"><span>Desk or cabin</span><input type="text" id="bk-desk" value="'+esc(S.desk)+'" placeholder="e.g. C2 or Desk 14"></label>';
       var hasTab=member&&member.company_id;
-      h+='<fieldset><legend>Payment</legend>'+opt("pay","online","Pay now: UPI, card or net banking","Secure checkout by Razorpay")+opt("pay","counter","Pay at the counter","Cash or UPI when you collect")
+      h+='<fieldset><legend>Payment</legend>'+opt("pay","online","Pay now: UPI, card or net banking","Secure checkout by PayU")+opt("pay","counter","Pay at the counter","Cash or UPI when you collect")
         +opt("pay","tab","Add to my company tab",hasTab?"Billed on your company\'s monthly invoice":(member?"Your account isn\'t linked to a company":"Members: sign in to use your tab"),member&&!hasTab)+'</fieldset>';
       if(!member)h+='<label class="f"><span>Your name</span><input type="text" id="bk-name" autocomplete="name" value="'+esc(S.name)+'"></label><label class="f"><span>Mobile</span><input type="tel" id="bk-phone" autocomplete="tel" inputmode="tel" value="'+esc(S.phone)+'" placeholder="10-digit mobile"></label><label class="f"><span>Email (optional, for your receipt)</span><input type="email" id="bk-email" autocomplete="email" value="'+esc(S.email)+'"></label>';
       var label=S.pay==="online"?"Pay "+rs(L.total):"Place order · "+rs(L.total);
@@ -2430,7 +2430,9 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
     if(d.status!=="cancelled")h+='<ol>'+steps.map(function(s,i){return '<li class="'+(i<idx?"done":i===idx?"now":"")+'">'+s[1]+'</li>'}).join("")+'</ol>';
     h+='<div class="lines">'+(d.items||[]).map(function(i){return '<div class="line"><span>'+i.qty+' × '+esc(i.name)+'</span></div>'}).join("")+'</div>';
     h+='<div class="total"><span>'+({tab:"On company tab",online:d.paid?"Paid online":"To pay online",counter:"Pay at counter"}[d.payment_method])+'</span><span>'+rs(d.total_paise)+'</span></div>';
-    if(waitingPay&&d.pay_url)h+='<a class="go" style="display:block;text-align:center;text-decoration:none" href="'+esc(d.pay_url)+'">Complete payment</a>';
+    if(waitingPay&&S.payNote==="failed")h+='<p class="sub" style="color:#C4582B;margin:0">That payment didn\'t go through. Nothing was charged. Try again, or pay at the counter when you collect.</p>';
+    if(waitingPay&&S.payNote==="pending")h+='<p class="sub" style="margin:0">Your bank is still confirming the payment. This updates on its own in a minute or two.</p>';
+    if(waitingPay&&d.pay_url)h+='<a class="go" style="display:block;text-align:center;text-decoration:none" href="'+esc(d.pay_url)+'">'+(S.payNote==="failed"?"Try payment again":"Complete payment")+'</a>';
     if(d.status==="cancelled")h+='<p class="sub">If this is a surprise, call the BREAK counter on <a href="tel:+918087050221" style="color:#C4582B">+91 80870 50221</a>.</p>';
     h+='<button type="button" class="linkbtn" id="bk-new" style="margin-top:6px">Start a new order</button></div>';
     panel.innerHTML=h;
@@ -2443,7 +2445,7 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
 
   // Start up
   cart=ls.get("tcc_break_cart")||{};
-  var ret=new URLSearchParams(location.search).get("break_order");
+  var ret=new URLSearchParams(location.search).get("break_order");S.payNote=new URLSearchParams(location.search).get("pay");
   var restore=ls.get(AUTH_KEY)?loadSb().then(function(c){return c.auth.getSession()}).then(function(r){return useSession(r.data.session)}).catch(function(){}):Promise.resolve();
   restore.then(loadMenu).then(function(){
     var last=(ls.get("tcc_break_orders")||[])[0];
@@ -2690,7 +2692,7 @@ html[data-dir="back"] .pane.enter{animation-name:paneInBack}
     h+='<div class="pl-amt"><input type="number" id="pl-amt" min="100" max="5000" step="50" placeholder="Other amount, ₹100–5,000" aria-label="Other amount"><button type="button" class="pl-btn" id="pl-topgo"'+(S.busy?' disabled':'')+'>Pay</button></div>';
     h+='<fieldset><legend>How you\'ll get it</legend><label class="opt"><input type="radio" name="pl-mode" value="pickup"'+(S.mode==="pickup"?' checked':'')+'><span>Pickup at the BREAK counter<small>4th floor, Orange City Mall 1</small></span></label><label class="opt"><input type="radio" name="pl-mode" value="desk"'+(S.mode==="desk"?' checked':'')+'><span>Bring it to my desk<small>Members at Branch 3</small></span></label></fieldset>';
     if(S.mode==="desk")h+='<label class="f"><span>Desk or cabin</span><input type="text" id="pl-desk" value="'+esc(S.desk)+'" placeholder="e.g. C2 or Desk 14"></label>';
-    h+='<div class="member" style="margin:6px 0 0"><span>Payments by Razorpay</span><button type="button" class="linkbtn" id="pl-out">Sign out</button></div>';
+    h+='<div class="member" style="margin:6px 0 0"><span>Payments by PayU</span><button type="button" class="linkbtn" id="pl-out">Sign out</button></div>';
     return h;
   }
   function render(){
