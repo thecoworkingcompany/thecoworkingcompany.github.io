@@ -16,7 +16,7 @@
   font-family:var(--display);font-variation-settings:"opsz" 144,"SOFT" 30,"WONK" 0;font-optical-sizing:auto;
   letter-spacing:-.018em;font-feature-settings:"ss01","kern","liga"}
 .h2{font-weight:400;line-height:.96}
-.hero h1{font-weight:300;line-height:.9;letter-spacing:-.025em}
+.hero h1{font-weight:300;line-height:.9;letter-spacing:-.025em;font-size:clamp(56px,8.2vw,128px)}
 .hero h1 b{font-weight:500;font-style:italic;font-variation-settings:"opsz" 144,"SOFT" 60,"WONK" 1}
 .index-list .nm{font-weight:400;line-height:1}
 .next-room b{font-weight:400}
