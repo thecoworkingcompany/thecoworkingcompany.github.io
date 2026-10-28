@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Virtual walkthrough · The Coworking Company</title>
+<meta name="description" content="Walk through The Coworking Company in Nagpur before you visit: reception, open floors, private cabins, meeting rooms, phone booths and BREAK café.">
+<link rel="canonical" href="https://thecoworkingcompany.in/walkthrough.html">
+<link rel="icon" type="image/png" sizes="48x48" href="assets/favicon-48.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<meta property="og:title" content="Virtual walkthrough · The Coworking Company">
+<meta property="og:description" content="Look around TCC before you visit.">
+<meta property="og:image" content="https://thecoworkingcompany.in/assets/og-icon-wide2.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..500&family=Familjen+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="/vendor/pannellum-2.5.6.css">
+<style>
+:root{--bg:#EDEBDE;--surface:#F6F4EA;--ink:#123C51;--soft:#4B6676;--line:#C9CCC0;--tomato:#F5634A;--sienna:#8C523C;--display:"Fraunces",Georgia,serif;--sans:"Familjen Grotesk",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1F2A;--surface:#132a37;--ink:#EDEBDE;--soft:#A9B6BD;--line:#2A4352;--sienna:#C98A70;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1F2A;--surface:#132a37;--ink:#EDEBDE;--soft:#A9B6BD;--line:#2A4352;--sienna:#C98A70;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+header{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:14px max(16px,env(safe-area-inset-left));border-bottom:1px solid var(--line)}
+header img{width:96px;height:auto;display:block}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header img{filter:invert(.93)}}
+a{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);letter-spacing:.04em;padding:12px 16px;border:1.5px solid var(--ink);color:var(--ink);background:transparent;text-decoration:none;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--tomato);border-color:var(--tomato);color:#1b0d09}
+.top{max-width:1240px;margin:0 auto;padding:28px 16px 14px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:16px}
+.label{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--sienna);margin:0}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(38px,6vw,72px);line-height:.95;margin:10px 0 0;letter-spacing:-.02em}
+h1 span{color:var(--tomato)}
+.lede{color:var(--soft);max-width:52ch;margin:10px 0 0}
+.stage{max-width:1240px;margin:0 auto;padding:0 16px;display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px}
+.viewer{position:relative;border:1.5px solid var(--ink);background:#081720;aspect-ratio:16/10;min-height:320px}
+#pano{position:absolute;inset:0}
+.cap{position:absolute;left:0;bottom:0;right:0;padding:16px 18px;background:linear-gradient(transparent,rgba(8,23,32,.85));color:#F6F4EA;pointer-events:none;z-index:2}
+.cap b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(22px,2.6vw,32px);line-height:1.05}
+.cap span{font-size:14px;opacity:.85}
+.dot{position:absolute;right:12px;top:12px;width:9px;height:9px;border-radius:50%;background:var(--tomato);z-index:3}
+.nav{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:44px;height:44px;border:1.5px solid #F6F4EA;background:rgba(8,23,32,.45);color:#F6F4EA;font:600 20px var(--sans);cursor:pointer}
+.nav.prev{left:12px}.nav.next{right:12px}
+.list{list-style:none;margin:0;padding:0;display:grid;gap:8px;align-content:start}
+.list button{all:unset;box-sizing:border-box;display:grid;grid-template-columns:64px 1fr;gap:12px;align-items:center;width:100%;padding:8px;border:1px solid var(--line);cursor:pointer;background:var(--surface)}
+.list button[aria-current="true"]{border-color:var(--ink);box-shadow:inset 3px 0 0 var(--tomato)}
+.list button:focus-visible{outline:2px solid var(--tomato);outline-offset:2px}
+.list img{width:64px;height:44px;object-fit:cover;display:block}
+.list b{font-weight:600;font-size:15px;display:block}
+.list small{color:var(--soft);font-size:12px}
+.hint{max-width:1240px;margin:10px auto 0;padding:0 16px;color:var(--soft);font-size:13px}
+.cta{max-width:1240px;margin:40px auto 64px;padding:0 16px}
+.cta .box{position:relative;border:1.5px solid var(--ink);background:var(--surface);padding:clamp(22px,3vw,36px);display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px}
+.cta h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,38px);margin:0;line-height:1.05}
+.cta .box::after{content:"";position:absolute;right:12px;bottom:12px;width:9px;height:9px;border-radius:50%;background:var(--tomato)}
+.row{display:flex;flex-wrap:wrap;gap:10px}
+.pnlm-hotspot-base.tcc-hs{width:auto;height:auto;padding:8px 12px;background:var(--tomato);color:#1b0d09;font:600 13px var(--sans);border-radius:0;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.3)}
+.pnlm-hotspot-base.tcc-hs::before{content:"→ "}
+.pnlm-load-box{background:rgba(8,23,32,.8)}
+.pnlm-title-box{display:none!important}
+@media (max-width:860px){.stage{grid-template-columns:1fr}.list{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}.list button{grid-template-columns:1fr}.list img{width:100%;height:80px}.viewer{aspect-ratio:4/5}}
+</style>
+</head>
+<body>
+<header>
+  <a href="/" aria-label="The Coworking Company home"><img src="assets/wordmark.png" alt="The Coworking Company" width="96" height="36"></a>
+  <div class="row"><a class="btn" href="/#locations">Locations</a><a class="btn primary" href="/#tour">Book a tour</a></div>
+</header>
+
+<div class="top">
+  <div>
+    <p class="label">Virtual walkthrough</p>
+    <h1>Look around<span>.</span></h1>
+    <p class="lede">Walk from reception to the floors, a private cabin, a meeting room and BREAK café. Drag to look around, or use the arrows.</p>
+  </div>
+</div>
+
+<div class="stage">
+  <div class="viewer" id="viewer">
+    <div id="pano" role="img" aria-label="Interactive view of the workspace"></div>
+    <button class="nav prev" type="button" id="prev" aria-label="Previous space">←</button>
+    <button class="nav next" type="button" id="next" aria-label="Next space">→</button>
+    <div class="cap" id="cap" aria-live="polite"><b></b><span></span></div>
+    <span class="dot" aria-hidden="true"></span>
+  </div>
+  <ol class="list" id="list" aria-label="Spaces"></ol>
+</div>
+<p class="hint" id="hint">Drag or swipe to look around · scroll or pinch to zoom · tap an orange label to walk on</p>
+
+<section class="cta">
+  <div class="box">
+    <div><p class="label">Like what you see?</p><h2>Come and see it in person.</h2></div>
+    <div class="row"><a class="btn primary" href="/#tour">Book a tour</a><a class="btn" href="/#daypass">Try a day pass</a></div>
+  </div>
+</section>
+
+<script src="/vendor/pannellum-2.5.6.js"></script>
+<script>
+/* Each stop is a photo. When a full 360° photo of a space is ready (2:1 equirectangular, from a 360 camera
+   or the Google Street View app), replace its "img" and set full:true; the viewer then lets people turn all the way round. */
+var STOPS=[
+  {id:"reception",name:"Reception",where:"Where you and your guests are welcomed",img:"assets/hd-reception.jpg",next:"floor"},
+  {id:"floor",name:"Open floor",where:"Dedicated desks with natural light",img:"assets/hd-open-floor.jpg",next:"wall"},
+  {id:"wall",name:"Team workspace",where:"The Constellation, for teams of 8–10",img:"assets/hd-logo-desks.jpg",next:"cabin"},
+  {id:"cabin",name:"Private cabin",where:"The Cabin: your door, your team",img:"assets/hd-cabin.jpg",next:"meeting"},
+  {id:"meeting",name:"Meeting room",where:"Book by the hour in the member app",img:"assets/hd-meeting-green.jpg",next:"board"},
+  {id:"board",name:"Boardroom",where:"For client pitches and board meetings",img:"assets/hd-boardroom.jpg",next:"booths"},
+  {id:"booths",name:"Phone booths",where:"For calls that need quiet",img:"assets/hd-booths.jpg",next:"break"},
+  {id:"break",name:"BREΛK café",where:"Orange City Mall 1, 4th floor",img:"assets/hd-cafe.jpg",next:"reception"}
+];
+var NAME={};STOPS.forEach(function(s){NAME[s.id]=s.name.replace("Λ","A")});
+var scenes={};
+STOPS.forEach(function(s){
+  var sc={title:s.name,panorama:s.img,hfov:s.full?100:72,minHfov:40,maxHfov:s.full?120:90,autoLoad:true,
+    hotSpots:[{pitch:-4,yaw:s.full?0:22,type:"scene",sceneId:s.next,text:NAME[s.next],cssClass:"pnlm-hotspot-base tcc-hs",createTooltipFunc:function(div){div.textContent=NAME[s.next]}}]};
+  if(!s.full){sc.haov=100;sc.vaov=66.7;sc.vOffset=0;sc.minYaw=-50;sc.maxYaw=50;sc.minPitch=-33;sc.maxPitch=33;sc.avoidShowingBackground=true}
+  scenes[s.id]=sc;
+});
+var reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+var v=pannellum.viewer("pano",{default:{firstScene:"reception",sceneFadeDuration:reduce?0:900,autoLoad:true,showControls:true,showFullscreenCtrl:true,showZoomCtrl:false,compass:false,mouseZoom:true,autoRotate:reduce?0:-1.2,autoRotateInactivityDelay:4000},scenes:scenes});
+var list=document.getElementById("list"),cap=document.getElementById("cap");
+list.innerHTML=STOPS.map(function(s,i){return '<li><button type="button" data-id="'+s.id+'"><img src="'+s.img+'" alt="" loading="lazy"><span><b>'+(i+1)+'. '+s.name+'</b><small>'+s.where+'</small></span></button></li>'}).join("");
+function mark(id){var s=STOPS.filter(function(x){return x.id===id})[0];if(!s)return;cap.querySelector("b").textContent=s.name;cap.querySelector("span").textContent=s.where;
+  [].forEach.call(list.querySelectorAll("button"),function(b){b.setAttribute("aria-current",b.dataset.id===id?"true":"false")});if(history.replaceState)history.replaceState(null,"","#"+id)}
+v.on("scenechange",mark);
+list.addEventListener("click",function(e){var b=e.target.closest("button");if(b)v.loadScene(b.dataset.id)});
+function step(d){var i=STOPS.map(function(s){return s.id}).indexOf(v.getScene());v.loadScene(STOPS[(i+d+STOPS.length)%STOPS.length].id)}
+document.getElementById("prev").onclick=function(){step(-1)};document.getElementById("next").onclick=function(){step(1)};
+document.addEventListener("keydown",function(e){if(e.target.closest("input,textarea"))return;if(e.key==="]"||e.key==="PageDown")step(1);if(e.key==="["||e.key==="PageUp")step(-1)});
+var start=location.hash.slice(1);if(scenes[start]&&start!=="reception")v.loadScene(start);
+mark(start&&scenes[start]?start:"reception");
+// visit stats, same as the main site (no cookies)
+try{var vid=localStorage.getItem("tcc-vid");fetch("https://kedmkbgizyepxwftahmk.supabase.co/rest/v1/rpc/log_site_event",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",apikey:"sb_publishable_SAeCe3CFJGoPIVGhqoTHEA_dPAEMIOV",Authorization:"Bearer sb_publishable_SAeCe3CFJGoPIVGhqoTHEA_dPAEMIOV"},body:JSON.stringify({p_path:"/walkthrough.html",p_event:"view",p_visitor:vid,p_device:/Mobi|Android|iPhone/i.test(navigator.userAgent)?"mobile":"desktop"})}).catch(function(){})}catch(e){}
+</script>
+</body>
+</html>

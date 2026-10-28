@@ -1,0 +1,46 @@
+:root{--bg:#EDEBDE;--surface:#F6F4EA;--ink:#123C51;--soft:#4B6676;--line:#C9CCC0;--tomato:#F5634A;--sienna:#8C523C;--sage:#899588;--display:"Fraunces",Georgia,serif;--sans:"Familjen Grotesk","Noto Sans Devanagari",system-ui,sans-serif;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1F2A;--surface:#132a37;--ink:#EDEBDE;--soft:#A9B6BD;--line:#2A4352;--sienna:#C98A70;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0D1F2A;--surface:#132a37;--ink:#EDEBDE;--soft:#A9B6BD;--line:#2A4352;--sienna:#C98A70;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.6 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--ink)}
+img{max-width:100%;display:block}
+.wrap{max-width:1180px;margin:0 auto;padding:0 max(16px,env(safe-area-inset-left))}
+header.top{border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:68px}
+header.top img{width:96px;height:auto}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) header.top img,:root:not([data-theme="light"]) footer img{filter:invert(.93)}}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{display:inline-flex;align-items:center;gap:8px;font:600 14px/1 var(--sans);letter-spacing:.04em;padding:13px 17px;border:1.5px solid var(--ink);color:var(--ink);background:transparent;text-decoration:none;white-space:nowrap}
+.btn.primary{background:var(--tomato);border-color:var(--tomato);color:#1b0d09}
+.label{font-size:12px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:var(--sienna);margin:0}
+h1{font-family:var(--display);font-weight:300;font-size:clamp(40px,7vw,84px);line-height:.95;letter-spacing:-.02em;margin:12px 0 0}
+h1 i{color:var(--tomato);font-style:normal}
+h2{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.6vw,44px);line-height:1;margin:10px 0 0;letter-spacing:-.01em}
+h3{margin:0;font-size:19px}
+.lede{color:var(--soft);font-size:19px;max-width:56ch;margin:16px 0 0}
+section{padding:clamp(44px,7vw,88px) 0}
+.hero{padding-top:clamp(32px,5vw,56px)}
+.grid2{display:grid;grid-template-columns:1.1fr 1fr;gap:clamp(20px,4vw,56px);align-items:start}
+.frame{position:relative;border:1.5px solid var(--ink);background:var(--surface);padding:clamp(20px,3vw,32px)}
+.frame::after{content:"";position:absolute;right:12px;bottom:12px;width:9px;height:9px;border-radius:50%;background:var(--tomato)}
+.facts{display:grid;gap:12px;margin:0}
+.facts div{display:grid;grid-template-columns:120px 1fr;gap:12px;border-top:1px solid var(--line);padding-top:12px}
+.facts dt{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.facts dd{margin:0}
+.map{border:1.5px solid var(--ink);aspect-ratio:4/3;width:100%;height:auto;display:block;background:var(--surface)}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}
+.gal img{width:100%;aspect-ratio:3/2;object-fit:cover}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px;margin-top:22px}
+.card{border:1px solid var(--line);background:var(--surface);padding:18px}
+.card p{margin:6px 0 0;color:var(--soft);font-size:15px}
+.price{font-family:var(--display);font-size:clamp(34px,4.6vw,56px);line-height:1;margin:10px 0 0}
+.price small{font-family:var(--sans);font-size:15px;color:var(--soft)}
+.ticks{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px}
+.ticks li{padding-left:20px;position:relative}
+.ticks li::before{content:"";position:absolute;left:0;top:.5em;width:9px;height:9px;background:var(--sage)}
+footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--soft);font-size:14px}
+footer .row{gap:8px 18px}
+footer img{width:80px;height:auto;margin-bottom:14px}
+.others a{display:block;padding:12px 0;border-top:1px solid var(--line);text-decoration:none;font-weight:600}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}.gal{grid-template-columns:1fr 1fr}.facts div{grid-template-columns:1fr;gap:2px}}

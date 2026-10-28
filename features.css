@@ -1,0 +1,76 @@
+/* ---------- Features layer (Oct 2026): price guide, day pass, events, reviews, walkthrough ---------- */
+.fx-dot{position:absolute;right:12px;bottom:12px;width:9px;height:9px;border-radius:50%;background:var(--tomato)}
+.fx-tomato{color:var(--tomato)}
+.fx-sub{color:var(--ink-soft);font-size:15px;line-height:1.55;margin:8px 0 0}
+.fx-opt{font-weight:400;color:var(--ink-soft);letter-spacing:0}
+.fx-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.fx-big{font-family:var(--display);font-size:clamp(40px,5.6vw,72px);line-height:1;margin:14px 0 0;letter-spacing:-.02em;font-variant-numeric:lining-nums}
+.fx-big small{font-family:var(--sans);font-size:15px;letter-spacing:.02em;color:var(--ink-soft);margin-left:6px}
+.fx-est{margin:10px 0 0;font-size:15px;color:var(--ink-soft)}
+.fx-est b{color:var(--ink);font-weight:600}
+
+/* price guide */
+.fx-price{display:grid;grid-template-columns:1.2fr 1fr;gap:clamp(20px,4vw,56px);align-items:end;margin-top:clamp(36px,5vw,64px);padding:clamp(24px,3.5vw,44px);background:var(--surface)}
+.fx-calc label{display:grid;gap:10px;font-size:13px;font-weight:600;letter-spacing:.04em}
+.fx-calc input[type=range]{width:100%;accent-color:var(--tomato)}
+.fx-calc p{display:grid;gap:2px;margin:14px 0 18px}
+.fx-calc p b{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--sienna)}
+.fx-calc p span{font-family:var(--display);font-size:clamp(30px,3.6vw,44px);line-height:1.05;font-variant-numeric:lining-nums tabular-nums}
+.fx-calc p small{color:var(--ink-soft);font-size:13px}
+
+/* day pass */
+.fx-dp{display:grid;grid-template-columns:1fr 1.15fr;gap:clamp(24px,4vw,64px);margin-top:clamp(48px,7vw,96px);align-items:start;scroll-margin-top:120px}
+.fx-h{margin:14px 0 0}
+.fx-ticks{list-style:none;padding:0;margin:20px 0 0;display:grid;gap:10px}
+.fx-ticks li{position:relative;padding-left:22px;font-size:15px}
+.fx-ticks li::before{content:"";position:absolute;left:0;top:.45em;width:10px;height:10px;background:var(--sage)}
+.fx-pay{display:flex;flex-wrap:wrap;gap:8px 20px}
+.fx-radio{display:flex!important;grid-template-columns:none!important;align-items:center;gap:8px!important;font-weight:500!important;letter-spacing:0!important;font-size:15px!important;cursor:pointer}
+.fx-radio input{width:auto!important;accent-color:var(--tomato)}
+.fx-dp-form .err{color:var(--tomato-ink);font-weight:600;font-size:14px}
+
+/* pass card */
+.fx-pass{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;margin-top:clamp(36px,5vw,56px);padding:clamp(22px,3vw,36px);background:var(--surface);scroll-margin-top:120px;outline:none;animation:fxIn .6s var(--ease-out,ease) both}
+.fx-pass h3{font-family:var(--display);font-weight:400;font-size:clamp(30px,4vw,48px);margin:10px 0 0;line-height:1}
+.fx-inc{display:inline-block;margin:12px 0 0;padding:6px 10px;background:var(--bg);font-size:13px;font-weight:600}
+.fx-pass-r{display:grid;justify-items:center;gap:8px}
+.fx-qr{width:150px;height:150px;background:#fff;padding:6px}
+.fx-qr svg{width:100%;height:100%;display:block}
+.fx-code{font:500 20px var(--mono);letter-spacing:.2em}
+@keyframes fxIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* events */
+.fx-events{margin-top:clamp(40px,6vw,72px)}
+.fx-ev-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;margin-top:16px}
+.fx-ev{display:grid;grid-template-columns:auto 1fr;gap:16px;padding:18px;background:rgba(255,255,255,.08);border-color:currentColor}
+.fx-ev time{display:grid;justify-items:center;align-content:start;font-size:12px;letter-spacing:.1em;text-transform:uppercase}
+.fx-ev time b{font-family:var(--display);font-size:34px;line-height:1;font-weight:400;letter-spacing:0}
+.fx-ev h4{margin:0;font-size:17px}
+.fx-ev p{margin:4px 0 0;font-size:14px;opacity:.85}
+#break .fx-ev .fx-sub{color:inherit;opacity:.7}
+
+/* reviews */
+.fx-reviews{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;align-items:end;margin-top:clamp(48px,6vw,80px);padding:clamp(24px,3.5vw,40px);background:var(--surface)}
+.fx-h3{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,38px);line-height:1.05;margin:12px 0 0}
+.fx-reviews .fx-row{justify-content:flex-end}
+
+/* walkthrough teaser */
+.fx-walk{display:grid;grid-template-columns:minmax(0,1.1fr) 1fr;margin-top:clamp(36px,5vw,64px);text-decoration:none;color:inherit;overflow:hidden;background:var(--surface)}
+.fx-walk img{width:100%;height:100%;min-height:220px;object-fit:cover;display:block;transition:transform 1.2s var(--ease-out,ease)}
+.fx-walk:hover img{transform:scale(1.05)}
+.fx-walk-t{display:grid;align-content:center;gap:8px;padding:clamp(22px,3vw,40px)}
+.fx-walk-t small{font-size:12px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--sienna)}
+.fx-walk-t b{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,40px);line-height:1.02}
+.fx-walk-t span{color:var(--ink-soft);font-size:15px}
+.fx-walk-go{position:absolute;right:18px;top:18px;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--tomato);color:#1b0d09;font:600 15px var(--sans);animation:fxSpin 9s linear infinite}
+@keyframes fxSpin{to{transform:rotate(360deg)}}
+.fx-branch{display:block;margin-top:8px}
+.fx-lang a{color:inherit}
+
+@media (max-width:820px){
+  .fx-price,.fx-dp,.fx-reviews,.fx-walk{grid-template-columns:1fr}
+  .fx-pass{grid-template-columns:1fr}
+  .fx-pass-r{justify-items:start}
+  .fx-reviews .fx-row{justify-content:flex-start}
+}
+@media (prefers-reduced-motion:reduce){.fx-walk-go,.fx-pass{animation:none}.fx-walk img{transition:none}}
