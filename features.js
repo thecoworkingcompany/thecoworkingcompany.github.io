@@ -182,10 +182,10 @@
   }).catch(function(){});
 
   // ---------------- Reviews, walkthrough, branch pages, languages ----------------
-  var MAPS="https://www.google.com/maps/search/?api=1&query="+encodeURIComponent("The Coworking Company Nagpur");
+  var MAPS="https://www.google.com/maps/place/?q=place_id:ChIJYxLZkUHB1DsRxbcopyXWBf4",WRITE="https://search.google.com/local/writereview?placeid=ChIJYxLZkUHB1DsRxbcopyXWBf4";
   var story=document.querySelector("#room-about .wrap");
   if(story&&!document.getElementById("fxReviews")){
-    story.appendChild(el('<div class="fx-reviews frame" id="fxReviews"><div><p class="label">In their words</p><h3 class="fx-h3">Read what members say on Google.</h3><p class="fx-sub">Real reviews from teams who work at TCC, unedited. Worked with us? A review helps other teams find a good place to work.</p></div><div class="fx-row"><a class="btn primary" href="'+MAPS+'" target="_blank" rel="noopener" data-track="Google reviews">Read reviews ↗</a><a class="btn" href="'+MAPS+'" target="_blank" rel="noopener" data-track="Write a review">Write a review ↗</a></div><span class="fx-dot" aria-hidden="true"></span></div>'));
+    story.appendChild(el('<div class="fx-reviews frame" id="fxReviews"><div><p class="label">In their words</p><h3 class="fx-h3">Read what members say on Google.</h3><p class="fx-sub">Real reviews from teams who work at TCC, unedited. Worked with us? A review helps other teams find a good place to work.</p></div><div class="fx-row"><a class="btn primary" href="'+MAPS+'" target="_blank" rel="noopener" data-track="Google reviews">Read reviews ↗</a><a class="btn" href="'+WRITE+'" target="_blank" rel="noopener" data-track="Write a review">Write a review ↗</a></div><span class="fx-dot" aria-hidden="true"></span></div>'));
   }
   var SLUG={1:"dharampeth",2:"dev-nagar",3:"orange-city-mall"};
   [].forEach.call(document.querySelectorAll("#locations .loc"),function(card,i){
