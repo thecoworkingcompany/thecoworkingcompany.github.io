@@ -28,16 +28,7 @@
     [].forEach.call(pics,function(el){el.classList.add("rv-img");io.observe(el)});
   }
 
-  // Numbers count up the first time the stats are seen
-  var stats=document.querySelectorAll(".stat .n");
-  if(stats.length&&!reduce&&"IntersectionObserver" in window){
-    var so=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;so.unobserve(e.target);var el=e.target,raw=el.textContent.trim(),m=raw.match(/^([\d,]+)(.*)$/);if(!m)return;
-      var target=parseInt(m[1].replace(/,/g,""),10),suffix=m[2],t0=performance.now(),dur=1400;
-      var fmt=function(n){return m[1].indexOf(",")>-1?n.toLocaleString("en-IN"):String(n)};
-      (function step(t){var k=Math.min(1,(t-t0)/dur);k=1-Math.pow(1-k,3);el.textContent=fmt(Math.round(target*k))+suffix;if(k<1)requestAnimationFrame(step)})(t0);
-    })},{threshold:.5});
-    [].forEach.call(stats,function(el){so.observe(el)});
-  }
+  // (stat count-up is handled by the site's own script)
 
   // Pointer-follow highlight on the primary button (subtle, desktop only)
   if(window.matchMedia("(hover:hover) and (pointer:fine)").matches){

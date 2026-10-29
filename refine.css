@@ -87,3 +87,81 @@ html[data-dir="back"] .pane.enter{animation-name:roomIn}
 
 /* BREAK keeps its own wordmark */
 .index-list li.is-break .nm{font-family:var(--sans);font-weight:700;font-variation-settings:normal;letter-spacing:.12em}
+
+/* ---------- Mobile pass ----------
+   The office planner's summary shares a class name with BREAK Pool (.pl-sum); scope it back to a stacked panel. */
+.planner .pl-sum{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;align-items:stretch;justify-content:normal;border-top:0;padding:22px 20px 26px;font:inherit;min-width:0}
+.planner .pl-sum .btn.primary{justify-content:center;text-align:center;white-space:normal;line-height:1.3}
+.planner .pl-rec b{overflow-wrap:anywhere}
+
+/* Quick-action bar: one row, never wider than the screen */
+.mbar{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:8px;max-width:100vw}
+.mbar a{min-width:0;padding:13px 6px;font-size:13px;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;justify-content:center}
+
+@media (max-width:760px){
+  html{-webkit-text-size-adjust:100%}
+  body{font-size:16px;line-height:1.55}
+  :root{--gut-l:max(18px,env(safe-area-inset-left,0px));--gut-r:max(18px,env(safe-area-inset-right,0px))}
+  section{padding-block:clamp(48px,11vw,72px)}
+  .h2{font-size:clamp(36px,11vw,52px);line-height:1}
+  .lede{font-size:17px}
+  .hero{padding-block:28px 40px}
+  .hero h1{font-size:clamp(46px,13.5vw,60px)}
+  .hero .lede{margin-top:18px;font-size:16.5px}
+  .hero .actions{gap:10px;margin-top:24px}
+  .hero .actions .btn{flex:1 1 calc(50% - 5px);justify-content:center;min-width:0}
+  .film{padding:8px}
+  .film .cap{padding:10px 20px 2px 2px}
+
+  /* comfortable thumbs: 44px targets, 12.5px minimum type */
+  .btn{min-height:44px;padding:12px 18px;font-size:15px}
+  .label,.ws .seat,.loc .floors,.menu-head p,.mcat h4,.strip figcaption,.mi{font-size:12.5px}
+  .pl-rec .kick,.rec .kick,.qz-top .kick{font-size:12px}
+  .mi{padding:9px 0}
+  .mi .add{width:36px;height:36px;font-size:18px}
+  .loc a.map{padding:10px 0;min-height:44px;align-items:center}
+  .loc .break-chip{padding:11px 12px}
+  .pillars span{padding:11px 14px;font-size:14px}
+  .rooms-tabs a{padding:12px 13px;font-size:14px}
+  .next-room .wrap{padding-block:28px 32px}
+  .next-room b{font-size:clamp(34px,10vw,48px)}
+
+  /* home: photo captions stack below the picture instead of fighting it */
+  .spaces figure{height:auto}
+  .spaces figcaption{position:static;display:grid;gap:4px;padding:10px 0 0;font-size:13px;line-height:1.35}
+  .spaces figcaption span{font-size:12.5px;letter-spacing:.04em;text-align:left}
+
+  /* stats: two per row, generous */
+  .stat{padding:22px 16px 20px 0}
+  .stat + .stat{padding-left:16px}
+  .stat .n{font-size:44px}
+  .stat .t{font-size:13px}
+
+  /* workspaces & locations: full-width cards */
+  .ws h3{font-size:34px}
+  .hq .txt{padding:22px 18px 28px}
+  .hq h3{font-size:clamp(34px,10vw,44px)}
+  .loc{padding:22px 18px 36px}
+  .loc .num{font-size:56px}
+
+  /* BREAK: the menu and ordering panel stack */
+  .menu{padding:20px 16px 24px}
+  .menu-cols{columns:1}
+  .menu-body{grid-template-columns:minmax(0,1fr)}
+  .bk-mark{font-size:clamp(56px,17vw,80px);letter-spacing:.14em}
+  .bk-story{font-size:14.5px}
+
+  /* member-app preview text was below readable size */
+  .phone{font-size:13px}
+  .phone .small,.phone small{font-size:12px}
+
+  /* footer links and copy buttons as tappable rows */
+  footer a{display:inline-block;padding:6px 0;min-height:32px}
+  .copy{min-height:40px;padding:8px 12px}
+  .index{overflow:hidden}
+}
+@media (max-width:420px){
+  .hero .actions .btn{flex-basis:100%}
+  .rooms-tabs a{padding:12px 11px;font-size:13.5px}
+}
+@media (max-width:760px){#room-tour a.v,#room-tour .v{overflow-wrap:anywhere;font-size:14.5px}}
