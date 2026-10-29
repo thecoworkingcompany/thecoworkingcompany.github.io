@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Review us on Google · The Coworking Company</title>
+<meta name="description" content="Worked at The Coworking Company in Nagpur? Leave a Google review for your branch.">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" sizes="48x48" href="/assets/favicon-48.png"><link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300..500&family=Familjen+Grotesk:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/pages.css?v=1">
+<style>
+.pick{display:grid;gap:12px;margin-top:26px;max-width:560px}
+.pick a{position:relative;display:grid;gap:4px;padding:20px 22px;border:1.5px solid var(--ink);background:var(--surface);text-decoration:none}
+.pick a b{font-family:var(--display);font-weight:400;font-size:clamp(24px,5vw,32px);line-height:1.05}
+.pick a span{color:var(--soft);font-size:15px}
+.pick a::after{content:"★";position:absolute;right:20px;top:50%;transform:translateY(-50%);color:var(--tomato);font-size:22px}
+.pick a:focus-visible{outline:2px solid var(--tomato);outline-offset:3px}
+.note{color:var(--soft);font-size:14px;margin-top:22px;max-width:560px}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap"><a href="/" aria-label="The Coworking Company"><img src="/assets/wordmark.png" alt="The Coworking Company" width="96" height="36"></a></div></header>
+<main><section class="hero"><div class="wrap">
+  <p class="label">Thank you for working with us</p>
+  <h1>Review us on Google<i>.</i></h1>
+  <p class="lede">It takes a minute and helps other teams in Nagpur find a good place to work. Pick the branch you work at:</p>
+  <div class="pick">
+    <a href="https://search.google.com/local/writereview?placeid=ChIJYxLZkUHB1DsRxbcopyXWBf4" data-b="devnagar"><b>Dev Nagar</b><span>JK Heights, Ajni Square</span></a>
+    <a href="https://search.google.com/local/writereview?placeid=ChIJO0EKnBa_1DsR7aVArIJh4hI" data-b="ocm"><b>Orange City Mall 1</b><span>Somalwada · 4th, 6th &amp; 8th floor · BREAK café</span></a>
+    <a href="https://search.google.com/local/writereview?placeid=ChIJjZDcp9vB1DsRLlRukQZ01Es" data-b="dharampeth"><b>Dharampeth</b><span>C Square, Mata Mandir Road</span></a>
+  </div>
+  <p class="note">You'll need to be signed in to a Google account. Something we could do better? Tell us directly on <a href="https://wa.me/918087050221">WhatsApp</a> or at <a href="mailto:info@thecoworkingcompany.in">info@thecoworkingcompany.in</a>.</p>
+</div></section></main>
+<script>
+// Remembered branch goes first; visit counted without cookies, like the rest of the site
+try{var last=localStorage.getItem("tcc-review-branch"),box=document.querySelector(".pick");if(last){var el=box.querySelector('[data-b="'+last+'"]');if(el)box.insertBefore(el,box.firstChild)}
+box.addEventListener("click",function(e){var a=e.target.closest("a");if(a){try{localStorage.setItem("tcc-review-branch",a.dataset.b)}catch(x){}
+fetch("https://kedmkbgizyepxwftahmk.supabase.co/rest/v1/rpc/log_site_event",{method:"POST",keepalive:true,headers:{"Content-Type":"application/json",apikey:"sb_publishable_SAeCe3CFJGoPIVGhqoTHEA_dPAEMIOV",Authorization:"Bearer sb_publishable_SAeCe3CFJGoPIVGhqoTHEA_dPAEMIOV"},body:JSON.stringify({p_path:"/review/",p_event:"cta",p_label:"Review: "+a.dataset.b,p_visitor:localStorage.getItem("tcc-vid")})}).catch(function(){})}})}catch(e){}
+</script>
+</body></html>
