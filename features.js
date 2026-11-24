@@ -3,7 +3,7 @@
    if a request fails, the page still works as before. ---------- */
 (function(){
   var SB="https://kedmkbgizyepxwftahmk.supabase.co",KEY="sb_publishable_SAeCe3CFJGoPIVGhqoTHEA_dPAEMIOV";
-  var WA="918087050221";
+  var WA="919130567291";
   function api(path,opts){opts=opts||{};var h={apikey:KEY,Authorization:"Bearer "+KEY};if(opts.body)h["Content-Type"]="application/json";
     return fetch(SB+path,{method:opts.method||(opts.body?"POST":"GET"),headers:h,body:opts.body?JSON.stringify(opts.body):undefined,keepalive:!!opts.keepalive})
       .then(function(r){return r.json().catch(function(){return{}}).then(function(j){if(!r.ok)throw new Error(j.error||j.message||("Error "+r.status));return j})})}
@@ -98,7 +98,7 @@
   function passCard(b,token){
     var paid=b.status==="paid"||b.status==="confirmed"||b.status==="used",pending=b.status==="pending_payment",cancelled=b.status==="cancelled";
     var head=cancelled?"This pass was cancelled":pending?"Payment not finished":paid?"You're booked":"Pass reserved";
-    var sub=cancelled?"Call +91 80870 50221 if this is a mistake.":pending?"Your seat is held for a few minutes. Finish paying, or choose to pay at the desk.":paid?"Paid. Show this code at reception.":"Pay "+rs(b.amount_paise)+" at reception when you arrive. Show this code.";
+    var sub=cancelled?"Call +91 91305 67291 if this is a mistake.":pending?"Your seat is held for a few minutes. Finish paying, or choose to pay at the desk.":paid?"Paid. Show this code at reception.":"Pay "+rs(b.amount_paise)+" at reception when you arrive. Show this code.";
     var card=el('<div class="fx-pass frame" id="fxPass" tabindex="-1"><div class="fx-pass-l"><p class="label">Day pass · '+esc(head)+'</p><h3>'+esc(niceDate(b.day))+'</h3><p class="fx-sub">'+esc(b.branch||branchName(b.branch_id))+' · '+b.people+(b.people>1?" people":" person")+' · '+rs(b.amount_paise)+'</p><p class="fx-sub">'+esc(sub)+'</p>'+
       (S.day_pass&&S.day_pass.includes?'<p class="fx-inc">Includes '+esc(S.day_pass.includes.charAt(0).toLowerCase()+S.day_pass.includes.slice(1))+(b.people>1?" each":"")+'</p>':'')+
       '<div class="fx-row">'+(pending&&token?'<a class="btn primary" href="'+SB+'/functions/v1/public-book/pay?t='+esc(token)+'">Pay '+rs(b.amount_paise)+'</a>':'')+
@@ -107,7 +107,7 @@
       '<a class="btn" target="_blank" rel="noopener" href="https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(branchAddr(b.branch_id))+'">Directions</a></div></div>'+
       (b.pass_code?'<div class="fx-pass-r"><div class="fx-qr" id="fxQr" aria-label="Pass QR code"></div><span class="fx-code">'+esc(b.pass_code)+'</span></div>':'')+'<span class="fx-dot" aria-hidden="true"></span></div>');
     if(b.pass_code)qrSvg("TCC:"+b.pass_code,card.querySelector("#fxQr"));
-    var ic=card.querySelector("#fxIcs");if(ic)ic.href=ics("Day pass · The Coworking Company",b.day,"","",branchAddr(b.branch_id),"Show code "+(b.pass_code||"")+" at reception.\nThe Coworking Company · +91 80870 50221");
+    var ic=card.querySelector("#fxIcs");if(ic)ic.href=ics("Day pass · The Coworking Company",b.day,"","",branchAddr(b.branch_id),"Show code "+(b.pass_code||"")+" at reception.\nThe Coworking Company · +91 91305 67291");
     return card;
   }
   ready.then(function(){
@@ -168,7 +168,7 @@
         var row=out.querySelector(".row"),old=document.getElementById("tourIcs");if(old)old.remove();
         if(date.value){var t=s.selectedOptions[0]&&s.selectedOptions[0].dataset.t,end=t?(function(){var m=+t.slice(0,2)*60+ +t.slice(3)+45;return (m<600?"0":"")+Math.floor(m/60)+":"+(m%60<10?"0":"")+m%60})():"";
           var br=document.getElementById("f-br").value,addr=/Dharampeth/.test(br)?BRANCHES[0][2]:/Dev Nagar/.test(br)?BRANCHES[1][2]:/Orange/.test(br)?BRANCHES[2][2]:"The Coworking Company, Nagpur";
-          var a=el('<a class="btn" id="tourIcs" download="tcc-tour.ics">Add to calendar</a>');a.href=ics("Tour · The Coworking Company",date.value,t||"",end,addr,"Tour of The Coworking Company. We'll call to confirm.\n+91 80870 50221");row.appendChild(a)}
+          var a=el('<a class="btn" id="tourIcs" download="tcc-tour.ics">Add to calendar</a>');a.href=ics("Tour · The Coworking Company",date.value,t||"",end,addr,"Tour of The Coworking Company. We'll call to confirm.\n+91 91305 67291");row.appendChild(a)}
       },60);
     });
   })();
