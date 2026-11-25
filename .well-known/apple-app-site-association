@@ -1,0 +1,19 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "AQL286B395.in.thecoworkingcompany.app",
+        "appIDs": ["AQL286B395.in.thecoworkingcompany.app"],
+        "paths": ["/app", "/app/*"],
+        "components": [
+          { "/": "/app" },
+          { "/": "/app/*" }
+        ]
+      }
+    ]
+  },
+  "webcredentials": {
+    "apps": ["AQL286B395.in.thecoworkingcompany.app"]
+  }
+}
